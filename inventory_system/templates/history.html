@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<section>
+  <h2>出入库历史</h2>
+  <form method="get" action="/history">
+    <label>按物资名称过滤<input name="name" value="{{ filters.name }}" placeholder="如：衬衫"></label>
+    <label>按员工过滤<input name="employee" value="{{ filters.employee }}" placeholder="如：张三"></label>
+    <button type="submit">筛选</button>
+    <a href="/" class="button secondary">返回首页</a>
+  </form>
+  <table>
+    <thead>
+      <tr><th>时间</th><th>类型</th><th>款式</th><th>员工</th><th>数量</th><th>备注</th></tr>
+    </thead>
+    <tbody>
+      {% for t in transactions %}
+        <tr>
+          <td>{{ t.created_at }}</td>
+          <td><span class="pill">{{ t.type_label }}</span></td>
+          <td>{{ t.name }} {{ t.size }} {{ t.category }}</td>
+          <td>{{ t.employee }}</td>
+          <td>{{ t.quantity }}</td>
+          <td>{{ t.note }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6">暂无记录</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

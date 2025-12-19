@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>安保服装库存</title>
+  <style>
+    body { font-family: "Noto Sans", "Helvetica", "Arial", sans-serif; margin: 0; padding: 0; background: #f4f5f7; color: #111; }
+    header { background: #0b6efd; color: #fff; padding: 16px 24px; }
+    header h1 { margin: 0; font-size: 20px; }
+    main { padding: 16px 24px 32px; max-width: 1080px; margin: 0 auto; }
+    section { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    h2 { margin-top: 0; font-size: 18px; }
+    h3 { margin-bottom: 8px; }
+    form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px 12px; align-items: end; }
+    label { display: flex; flex-direction: column; font-size: 13px; color: #333; gap: 4px; }
+    input, select, button, textarea { padding: 8px; border-radius: 8px; border: 1px solid #cfd4da; font-size: 14px; }
+    button, .button { background: #0b6efd; color: white; border: none; cursor: pointer; transition: background 0.2s ease; text-decoration: none; text-align: center; }
+    button.secondary, .button.secondary { background: #fff; color: #0b6efd; border: 1px solid #0b6efd; }
+    button:hover, .button:hover { background: #0958d9; color: #fff; }
+    button.secondary:hover, .button.secondary:hover { background: #e8f0ff; color: #0b6efd; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: 8px; text-align: left; }
+    th { background: #f8f9fb; }
+    .alert { padding: 10px 12px; border-radius: 10px; margin-bottom: 12px; }
+    .alert.success { background: #e7f6ed; color: #1b7a4a; }
+    .alert.error { background: #fde8e8; color: #b42318; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; background: #eef2ff; color: #3730a3; }
+    .muted { color: #6b7280; font-size: 12px; }
+    .stack { display: grid; gap: 12px; }
+    .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>安保服装库存</h1>
+  </header>
+  <main>
+    {% if message %}
+      <div class="alert success">{{ message }}</div>
+    {% endif %}
+    {% if error %}
+      <div class="alert error">{{ error }}</div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

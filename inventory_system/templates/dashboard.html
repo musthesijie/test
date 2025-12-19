@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="stack">
+  <h2>快速录入</h2>
+  <div class="two-col">
+    <div>
+      <h3>新增款式</h3>
+      <form method="post" action="/add-item">
+        <label>名称<input name="name" required placeholder="如：短袖衬衫"></label>
+        <label>尺码/规格<input name="size" placeholder="L"></label>
+        <label>类别/季节<input name="category" placeholder="夏季"></label>
+        <label>安全库存<input name="min_stock" type="number" min="0" value="0"></label>
+        <button type="submit">保存款式</button>
+      </form>
+    </div>
+    <div>
+      <h3>新增员工</h3>
+      <form method="post" action="/add-employee">
+        <label>姓名<input name="name" required placeholder="张三"></label>
+        <label>岗位<input name="role" placeholder="班长"></label>
+        <label>工牌号<input name="badge" placeholder="可选"></label>
+        <button type="submit">保存员工</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>出入库操作</h2>
+  <div class="two-col">
+    <form method="post" action="/stock-in">
+      <h3>入库 / 补货</h3>
+      <label>款式<input name="name" list="item-names" required></label>
+      <label>尺码<input name="size" list="item-sizes"></label>
+      <label>类别<input name="category" list="item-categories"></label>
+      <label>数量<input name="quantity" type="number" min="1" required></label>
+      <label>备注<textarea name="note" rows="2" placeholder="供应批次等"></textarea></label>
+      <button type="submit">记录入库</button>
+    </form>
+
+    <form method="post" action="/issue">
+      <h3>发放给员工</h3>
+      <label>款式<input name="name" list="item-names" required></label>
+      <label>尺码<input name="size" list="item-sizes"></label>
+      <label>类别<input name="category" list="item-categories"></label>
+      <label>数量<input name="quantity" type="number" min="1" required></label>
+      <label>员工<select name="employee">
+        <option value="">选择员工</option>
+        {% for emp in employees %}<option value="{{ emp.name }}">{{ emp.name }} ({{ emp.role }})</option>{% endfor %}
+      </select></label>
+      <label>备注<textarea name="note" rows="2" placeholder="入职发放等"></textarea></label>
+      <button type="submit">记录发放</button>
+    </form>
+  </div>
+
+  <div class="two-col">
+    <form method="post" action="/return">
+      <h3>员工归还</h3>
+      <label>款式<input name="name" list="item-names" required></label>
+      <label>尺码<input name="size" list="item-sizes"></label>
+      <label>类别<input name="category" list="item-categories"></label>
+      <label>数量<input name="quantity" type="number" min="1" required></label>
+      <label>员工<select name="employee">
+        <option value="">选择员工</option>
+        {% for emp in employees %}<option value="{{ emp.name }}">{{ emp.name }} ({{ emp.role }})</option>{% endfor %}
+      </select></label>
+      <label>备注<textarea name="note" rows="2" placeholder="换季归还等"></textarea></label>
+      <button type="submit">记录归还</button>
+    </form>
+
+    <form method="post" action="/adjust">
+      <h3>盘点调整</h3>
+      <label>款式<input name="name" list="item-names" required></label>
+      <label>尺码<input name="size" list="item-sizes"></label>
+      <label>类别<input name="category" list="item-categories"></label>
+      <label>调整数量<input name="quantity" type="number" required placeholder="正数增加，负数减少"></label>
+      <label>备注<textarea name="note" rows="2" placeholder="盘盈/盘亏原因"></textarea></label>
+      <button type="submit">记录调整</button>
+    </form>
+  </div>
+
+  <datalist id="item-names">{% for item in items %}<option value="{{ item.name }}">{% endfor %}</datalist>
+  <datalist id="item-sizes">{% for item in items %}<option value="{{ item.size }}">{% endfor %}</datalist>
+  <datalist id="item-categories">{% for item in items %}<option value="{{ item.category }}">{% endfor %}</datalist>
+</section>
+
+<section>
+  <h2>库存与预警</h2>
+  <table>
+    <thead>
+      <tr><th>名称</th><th>尺码</th><th>类别</th><th>库存</th><th>安全库存</th><th>预警</th></tr>
+    </thead>
+    <tbody>
+      {% for row in status_rows %}
+        <tr>
+          <td>{{ row.name }}</td>
+          <td>{{ row.size }}</td>
+          <td>{{ row.category }}</td>
+          <td>{{ row.quantity }}</td>
+          <td>{{ row.min_stock }}</td>
+          <td>{{ row.alert }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6">暂无库存，请先添加款式并入库。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>最近流水</h2>
+  <div class="muted">最近 10 条出入库记录，更多请查看历史页。</div>
+  <table>
+    <thead>
+      <tr><th>时间</th><th>类型</th><th>款式</th><th>员工</th><th>数量</th><th>备注</th></tr>
+    </thead>
+    <tbody>
+      {% for t in recent_history %}
+        <tr>
+          <td>{{ t.created_at }}</td>
+          <td><span class="pill">{{ t.type_label }}</span></td>
+          <td>{{ t.name }} {{ t.size }} {{ t.category }}</td>
+          <td>{{ t.employee }}</td>
+          <td>{{ t.quantity }}</td>
+          <td>{{ t.note }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6">暂无流水记录。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div style="margin-top:8px;"><a href="/history">查看全部历史记录 →</a></div>
+</section>
+{% endblock %}
