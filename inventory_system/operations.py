@@ -135,6 +135,22 @@ def log_transaction(
     employee_id: int | None = None,
 ) -> Dict:
     with get_connection() as conn:
+        conn.execute(
+            "INSERT INTO stock_levels (item_id, quantity) VALUES (?, 0)\n"
+            "ON CONFLICT(item_id) DO NOTHING",
+            (item_id,),
+        )
+
+        existing = conn.execute(
+            "SELECT quantity FROM stock_levels WHERE item_id = ?",
+            (item_id,),
+        ).fetchone()["quantity"]
+        new_quantity = existing + quantity
+        if new_quantity < 0:
+            raise ValueError(
+                f"库存不足，当前 {existing} 件，无法扣减 {abs(quantity)} 件"
+            )
+
         cur = conn.execute(
             "INSERT INTO transactions (item_id, employee_id, type, quantity, note)\n"
             "VALUES (?, ?, ?, ?, ?)\n"
@@ -143,13 +159,8 @@ def log_transaction(
         )
         transaction = cur.fetchone()
         conn.execute(
-            "INSERT INTO stock_levels (item_id, quantity) VALUES (?, 0)\n"
-            "ON CONFLICT(item_id) DO NOTHING",
-            (item_id,),
-        )
-        conn.execute(
-            "UPDATE stock_levels SET quantity = quantity + ? WHERE item_id = ?",
-            (quantity, item_id),
+            "UPDATE stock_levels SET quantity = ? WHERE item_id = ?",
+            (new_quantity, item_id),
         )
         return dict(transaction)
 
